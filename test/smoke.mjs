@@ -1,0 +1,35 @@
+// Headless smoke test: loads the game, captures console errors and screenshots.
+import { chromium } from 'playwright';
+import { readFile } from 'node:fs/promises';
+import { extname, join } from 'node:path';
+const DIST = new URL('../dist/', import.meta.url).pathname;
+const TYPES = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css' };
+
+const url = 'http://game.local/index.html';
+const out = process.argv[2] || '/projects/sandbox/.kiro/artifacts/screenshots';
+const quality = process.argv[3] || 'low';
+const browser = await chromium.launch({ args: ['--no-sandbox', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
+const page = await browser.newPage({ viewport: { width: 800, height: 450 } });
+const errors = [];
+page.on('console', (m) => { if (m.type() === 'error' || m.type() === 'warning') errors.push(`[${m.type()}] ${m.text()}`); });
+await page.route('http://game.local/**', async (route) => { const path = new URL(route.request().url()).pathname; try { const body = await readFile(join(DIST, path)); await route.fulfill({ body, contentType: TYPES[extname(path)] || 'application/octet-stream' }); } catch { await route.fulfill({ status: 404, body: '' }); } });
+page.on('pageerror', (e) => errors.push('[pageerror] ' + e.message));
+await page.goto(url);
+const t0 = Date.now();
+await page.waitForSelector('#title:not(.hidden)', { timeout: 240000 }).catch(() => {});
+console.log(errors.join('\n')); console.log('load time', (Date.now() - t0) / 1000, 's', 'loadtext:', await page.textContent('#loadtext'));
+await page.click(`.quality button[data-q="${quality}"]`).catch(() => {});
+await page.waitForTimeout(4000);
+await page.screenshot({ path: `${out}/01-title.png`, timeout: 180000 }); console.log('shot', Date.now()-t0, errors.length);
+await page.click('#startBtn');
+await page.evaluate(() => { document.getElementById('title').classList.add('hidden'); });
+await page.keyboard.down('KeyW'); await page.waitForTimeout(2500); await page.keyboard.up('KeyW');
+await page.waitForTimeout(12000);
+await page.screenshot({ path: `${out}/02-game.png`, timeout: 180000 }); console.log('shot', Date.now()-t0, errors.length);
+await page.mouse.click(640, 360); await page.waitForTimeout(250);
+await page.screenshot({ path: `${out}/03-attack.png`, timeout: 180000 }); console.log('shot', Date.now()-t0, errors.length);
+await page.waitForTimeout(6000);
+await page.screenshot({ path: `${out}/04-fight.png`, timeout: 180000 }); console.log('shot', Date.now()-t0, errors.length);
+console.log('fps:', await page.textContent('#fps'));
+console.log(errors.slice(0, 30).join('\n') || 'no console errors');
+await browser.close();

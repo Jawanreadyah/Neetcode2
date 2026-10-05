@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>A Song of Steel — The Siege of Winterhold</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,500;1,500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/src/style.css" />
+</head>
+<body>
+  <canvas id="game"></canvas>
+
+  <!-- Loading -->
+  <div id="loading" class="screen">
+    <div class="sigil-spin"></div>
+    <h2>Forging the realm…</h2>
+    <div class="loadbar"><div id="loadfill"></div></div>
+    <p id="loadtext">Quarrying stone</p>
+  </div>
+
+  <!-- Title -->
+  <div id="title" class="screen hidden">
+    <div class="title-wrap">
+      <p class="pre">A tale of ice and iron</p>
+      <h1>A SONG OF STEEL</h1>
+      <h3>— The Siege of Winterhold —</h3>
+      <p class="lore">The Crimson Host has breached the outer walls. Rain falls on the old stones of the North.
+        Hold the courtyard, Lord Commander, until the last of their sworn swords lies dead in the mud.</p>
+      <div class="quality">
+        <span>Graphics</span>
+        <button data-q="low">Low</button>
+        <button data-q="high">High</button>
+        <button data-q="ultra" class="active">Ultra</button>
+      </div>
+      <button id="startBtn" class="big">Take up the sword</button>
+      <div class="controls">
+        <div><b>WASD</b> Move</div><div><b>Mouse</b> Look</div><div><b>Shift</b> Sprint</div>
+        <div><b>LMB</b> Attack / combo</div><div><b>RMB</b> Block</div><div><b>Space</b> Dodge roll</div>
+        <div><b>Q</b> Heavy strike</div><div><b>1/2/3</b> Quality</div><div><b>Esc</b> Pause</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- HUD -->
+  <div id="hud" class="hidden">
+    <div id="house">
+      <div class="crest"><svg viewBox="0 0 100 100" width="34" height="34" style="position:absolute;left:6px;top:8px"><path fill="#2a2e34" d="M42 8 53 30 63 10 70 36 79 50 82 72 72 94 66 80 57 96 52 80 44 90 40 72 30 66 20 64 12 60 6 52 10 46 22 42 33 30Z"/></svg></div>
+      <div><div class="hname">House Varrow of Winterhold</div><div class="motto">"The Winter Takes All"</div></div>
+    </div>
+    <div id="bars">
+      <div class="bar hp"><div id="hpfill"></div><span>Health</span></div>
+      <div class="bar st"><div id="stfill"></div><span>Stamina</span></div>
+    </div>
+    <div id="wave"><span id="waveLabel">Wave I</span><span id="kills">0 slain</span></div>
+    <div id="announce"></div>
+    <div id="enemyBars"></div>
+    <div id="dmgVignette"></div>
+    <div id="fps"></div>
+  </div>
+
+  <div id="pause" class="screen hidden">
+    <h1>Paused</h1>
+    <p>Click to return to battle</p>
+  </div>
+  <div id="end" class="screen hidden">
+    <h1 id="endTitle">You have fallen</h1>
+    <p id="endText"></p>
+    <button id="againBtn" class="big">Rise again</button>
+  </div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
